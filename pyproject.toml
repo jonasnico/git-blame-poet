@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "git-blame-poet"
+version = "1.0.0"
+description = "Turn git blame into dramatic literary narratives 🎭"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+keywords = ["git", "blame", "poetry", "cli", "fun", "nerdy"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Version Control :: Git",
+    "Topic :: Games/Entertainment",
+]
+dependencies = [
+    "click>=8.0",
+    "openai>=1.0",
+    "rich>=13.0",
+]
+
+[project.scripts]
+git-blame-poet = "git_blame_poet.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/git_blame_poet"]
+
+[project.urls]
+Repository = "https://github.com/jonasnico/git-blame-poet"
