@@ -10,7 +10,7 @@ from rich.panel import Panel
 from rich.text import Text
 
 from git_blame_poet.blame_parser import parse_blame_text, run_git_blame
-from git_blame_poet.poet import DEFAULT_STYLE, STYLES, dramatize
+from git_blame_poet.poet import DEFAULT_STYLE, STYLES, PROVIDERS, DEFAULT_PROVIDER, dramatize
 
 console = Console()
 
@@ -54,11 +54,18 @@ def _show_styles() -> None:
     help="Git revision (branch, tag, or commit) to blame against.",
 )
 @click.option(
+    "-p",
+    "--provider",
+    type=click.Choice(list(PROVIDERS.keys()), case_sensitive=False),
+    default=DEFAULT_PROVIDER,
+    help="LLM provider to use.",
+    show_default=True,
+)
+@click.option(
     "-m",
     "--model",
-    default="gpt-4o-mini",
-    help="OpenAI model to use.",
-    show_default=True,
+    default=None,
+    help="Model to use (defaults to provider's recommended model).",
 )
 @click.option(
     "--list-styles",
@@ -74,7 +81,8 @@ def main(
     file: str | None,
     style: str,
     revision: str | None,
-    model: str,
+    provider: str,
+    model: str | None,
     list_styles: bool,
     raw: bool,
 ) -> None:
@@ -86,6 +94,7 @@ def main(
     Examples:
         git-blame-poet src/main.py
         git-blame-poet -s noir app/routes.py
+        git-blame-poet -p openai -m gpt-4o app/routes.py
         git-blame-poet -s horror --revision main lib/auth.rb
         cat blame.txt | git-blame-poet
     """
@@ -116,23 +125,25 @@ def main(
             raise SystemExit(1)
 
     style_cfg = STYLES[style]
+    provider_cfg = PROVIDERS[provider]
+    display_model = model or provider_cfg["default_model"]
 
     if not raw:
         _show_banner()
         console.print(
-            f"[dim]Consulting the muse ({model})...[/dim]\n"
+            f"[dim]Consulting the muse ({provider_cfg['label']}: {display_model})...[/dim]\n"
             f"[dim]Style: {style_cfg['label']}[/dim]\n"
             f"[dim]{blame.summary()} in [cyan]{blame.file_path}[/cyan][/dim]\n"
         )
 
     try:
-        narrative = dramatize(blame, style=style, model=model)
+        narrative = dramatize(blame, style=style, provider=provider, model=model)
     except Exception as exc:
         error_msg = str(exc)
         if "api_key" in error_msg.lower() or "auth" in error_msg.lower():
             console.print(
-                "[red]Error:[/red] OpenAI API key not found.\n"
-                "Set it with: [cyan]export OPENAI_API_KEY=sk-...[/cyan]"
+                f"[red]Error:[/red] {provider_cfg['label']} API key not found.\n"
+                f"Set it with: [cyan]export {provider_cfg['env_var']}=...[/cyan]"
             )
         else:
             console.print(f"[red]Error from LLM:[/red] {error_msg}")

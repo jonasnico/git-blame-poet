@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from google import genai
 from openai import OpenAI
 from openai.types.chat import (
     ChatCompletionSystemMessageParam,
@@ -96,12 +97,29 @@ def _format_blame_for_prompt(blame: BlameResult) -> str:
     return "\n".join(lines)
 
 
+PROVIDERS = {
+    "openai": {
+        "label": "OpenAI",
+        "default_model": "gpt-4o-mini",
+        "env_var": "OPENAI_API_KEY",
+    },
+    "gemini": {
+        "label": "Google Gemini",
+        "default_model": "gemini-3-flash-preview",
+        "env_var": "GOOGLE_API_KEY",
+    },
+}
+
+DEFAULT_PROVIDER = "gemini"
+
+
 def dramatize(
     blame: BlameResult,
     style: str = DEFAULT_STYLE,
-    model: str = "gpt-4o-mini",
+    provider: str = DEFAULT_PROVIDER,
+    model: str | None = None,
 ) -> str:
-    """Send blame data to OpenAI and return a dramatic narrative."""
+    """Send blame data to an LLM and return a dramatic narrative."""
     style_cfg = STYLES.get(style, STYLES[DEFAULT_STYLE])
     system_prompt = (
         f"{style_cfg['instruction']}\n\n"
@@ -118,6 +136,15 @@ def dramatize(
         f"{_format_blame_for_prompt(blame)}"
     )
 
+    provider_cfg = PROVIDERS[provider]
+    resolved_model = model or provider_cfg["default_model"]
+
+    if provider == "gemini":
+        return _call_gemini(system_prompt, user_prompt, resolved_model)
+    return _call_openai(system_prompt, user_prompt, resolved_model)
+
+
+def _call_openai(system_prompt: str, user_prompt: str, model: str) -> str:
     client = OpenAI()
     response = client.chat.completions.create(
         model=model,
@@ -128,5 +155,18 @@ def dramatize(
         temperature=1.0,
         max_tokens=1500,
     )
-
     return response.choices[0].message.content or "(The muse was silent.)"
+
+
+def _call_gemini(system_prompt: str, user_prompt: str, model: str) -> str:
+    client = genai.Client()
+    response = client.models.generate_content(
+        model=model,
+        config=genai.types.GenerateContentConfig(
+            system_instruction=system_prompt,
+            temperature=1.0,
+            max_output_tokens=1500,
+        ),
+        contents=user_prompt,
+    )
+    return response.text or "(The muse was silent.)"
