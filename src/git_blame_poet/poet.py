@@ -3,6 +3,10 @@
 from __future__ import annotations
 
 from openai import OpenAI
+from openai.types.chat import (
+    ChatCompletionSystemMessageParam,
+    ChatCompletionUserMessageParam,
+)
 
 from git_blame_poet.blame_parser import BlameResult
 
@@ -118,8 +122,8 @@ def dramatize(
     response = client.chat.completions.create(
         model=model,
         messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
+            ChatCompletionSystemMessageParam(role="system", content=system_prompt),
+            ChatCompletionUserMessageParam(role="user", content=user_prompt),
         ],
         temperature=1.0,
         max_tokens=1500,

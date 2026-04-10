@@ -1,9 +1,7 @@
 # 🎭 git-blame-poet
 
-> *"In the beginning was the commit, and the commit was with git."*
 
 Turn any file's `git blame` into a dramatic literary narrative using AI.
-Because every line of code has a story — and that story deserves to be *told*.
 
 ## Install
 
