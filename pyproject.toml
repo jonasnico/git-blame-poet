@@ -18,7 +18,7 @@ classifiers = [
     "Topic :: Games/Entertainment",
 ]
 dependencies = [
-    "click>=8.0",
+    "click>=8.1.8",
     "openai>=1.0",
     "google-genai>=1.0",
     "rich>=13.0",
