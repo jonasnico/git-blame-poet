@@ -10,7 +10,13 @@ from rich.panel import Panel
 from rich.text import Text
 
 from git_blame_poet.blame_parser import parse_blame_text, run_git_blame
-from git_blame_poet.poet import DEFAULT_STYLE, STYLES, PROVIDERS, DEFAULT_PROVIDER, dramatize
+from git_blame_poet.poet import (
+    DEFAULT_PROVIDER,
+    DEFAULT_STYLE,
+    PROVIDERS,
+    STYLES,
+    dramatize,
+)
 
 console = Console()
 
@@ -130,8 +136,9 @@ def main(
 
     if not raw:
         _show_banner()
+        muse = f"{provider_cfg['label']}: {display_model}"
         console.print(
-            f"[dim]Consulting the muse ({provider_cfg['label']}: {display_model})...[/dim]\n"
+            f"[dim]Consulting the muse ({muse})...[/dim]\n"
             f"[dim]Style: {style_cfg['label']}[/dim]\n"
             f"[dim]{blame.summary()} in [cyan]{blame.file_path}[/cyan][/dim]\n"
         )
@@ -161,6 +168,6 @@ def main(
         )
         console.print(panel)
         console.print(
-            "\n[dim italic]\"In the beginning was the commit, "
-            "and the commit was with git.\"[/dim italic]\n"
+            '\n[dim italic]"In the beginning was the commit, '
+            'and the commit was with git."[/dim italic]\n'
         )

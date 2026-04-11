@@ -32,3 +32,14 @@ packages = ["src/git_blame_poet"]
 
 [project.urls]
 Repository = "https://github.com/jonasnico/git-blame-poet"
+
+[tool.ruff]
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
