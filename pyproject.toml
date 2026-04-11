@@ -26,6 +26,7 @@ dependencies = [
 
 [project.scripts]
 git-blame-poet = "git_blame_poet.cli:main"
+gbp = "git_blame_poet.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/git_blame_poet"]

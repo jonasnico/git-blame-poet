@@ -26,27 +26,29 @@ export OPENAI_API_KEY=sk-...
 
 ## Usage
 
+Both `git-blame-poet` and the shorter `gbp` command are installed. `gbp` is the recommended shortcut:
+
 ```bash
 # Shakespearean tragedy (default style, Gemini provider)
-git-blame-poet src/main.py
+gbp src/main.py
 
 # Film noir detective story
-git-blame-poet -s noir app/routes.py
+gbp -s noir app/routes.py
 
 # Epic fantasy quest using OpenAI
-git-blame-poet -s epic -p openai lib/database.rb
+gbp -s epic -p openai lib/database.rb
 
 # Horror story about legacy code at a specific revision
-git-blame-poet -s horror --revision main utils/auth.py
+gbp -s horror --revision main utils/auth.py
 
 # Use a specific model
-git-blame-poet -p openai -m gpt-4o app/routes.py
+gbp -p openai -m gpt-4o app/routes.py
 
 # Pipe existing blame output
-git blame src/index.ts | git-blame-poet
+git blame src/index.ts | gbp
 
 # Plain text output (no colors)
-git-blame-poet --raw src/main.py
+gbp --raw src/main.py
 ```
 
 ## Styles
@@ -60,7 +62,7 @@ git-blame-poet --raw src/main.py
 | `nature`      | 🐧 Attenborough nature documentary|
 | `horror`      | 👻 Haunted codebase horror story  |
 
-List all styles: `git-blame-poet --list-styles`
+List all styles: `gbp --list-styles`
 
 ## Providers
 
